@@ -33,15 +33,18 @@ def register():
 
         if error is None:
             c.execute(
-                'INSERT INTO usuario (nombre, email, password, tipo_usuario) VALUES (%s, %s, %s, 2) RETURNING id_usuario',
+                'INSERT INTO usuario (nombre, email, password, tipo_usuario) VALUES (%s, %s, %s, 2) RETURNING id_usuario, tipo_usuario',
                 (nombre, email, generate_password_hash(password))
             )
             user = c.fetchone()
             session.clear()
             session['user_id'] = user[0]
-            db.commit()
-            return redirect(url_for('home.index'))
 
+            db.commit()
+
+            if user[1] == 1:
+                return redirect(url_for('admin.index'))
+            return redirect(url_for('home.index'))
 
         flash(error, "error")
 
@@ -75,7 +78,10 @@ def login():
         if error is None:
             session.clear()
             session['user_id'] = user[0]
-            return redirect(url_for('home.index'))
+            if user[4] == 1:
+                return redirect(url_for('admin.index'))
+            else:
+                return redirect(url_for('home.index'))
 
         flash(error, 'error')
 

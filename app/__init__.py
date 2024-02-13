@@ -14,6 +14,7 @@ def create_app():
         FLASK_DATABASE_HOST=os.environ.get("FLASK_DATABASE_HOST"),
         FLASK_DATABASE_PORT=os.environ.get("FLASK_DATABASE_PORT"),
         FLASK_DATABASE=os.environ.get("FLASK_DATABASE"),
+        UPLOAD_FOLDER='static/img/'
     )
 
     from . import db
@@ -22,7 +23,9 @@ def create_app():
 
     from . import auth
     from . import home
+    from . import admin
     app.register_blueprint(auth.bp)
     app.register_blueprint(home.bp)
+    app.register_blueprint(admin.bp)
 
     return app
