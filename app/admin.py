@@ -16,35 +16,44 @@ def index():
 @bp.route('/add-product', methods=['POST'])
 @admin_required
 def add_product():
-    name = request.form.get('name')
-    marca = request.form.get('marca')
-    cantidad = request.form.get('cantidad')
-    category = request.form.get('category')
+    try:
+        name = request.form.get('name')
+        marca = request.form.get('marca')
+        cantidad = request.form.get('cantidad')
+        category = request.form.get('category')
 
-    imagen = request.files['imagen']
-    if imagen:
-        carpeta = os.path.join(current_app.root_path, current_app.config['UPLOAD_FOLDER'])
-        if not os.path.exists(carpeta):
-            os.makedirs(carpeta)  # Crear la carpeta si no existe
-        ruta_img = os.path.join(carpeta, imagen.filename)
-        imagen.save(ruta_img)
+        imagen = request.files['imagen']
+        if imagen:
+            carpeta = os.path.join(current_app.root_path,
+                                   current_app.config['UPLOAD_FOLDER'])
+            if not os.path.exists(carpeta):
+                os.makedirs(carpeta)  # Crear la carpeta si no existe
+            ruta_img = os.path.join(carpeta, imagen.filename)
+            imagen.save(ruta_img)
 
-    tipo = None
-    if category == "MT":
-        tipo = 1
-    elif category == "HH":
-        tipo = 2
-    elif category == "EPP":
-        tipo = 3
+        tipo = None
+        if category == "MT":
+            tipo = 1
+        elif category == "HH":
+            tipo = 2
+        elif category == "EPP":
+            tipo = 3
 
-    if tipo:
-        db, c = get_db()
-        c.execute(
-            f"INSERT INTO producto (nombre, marca, imagen, cantidad, tipo_producto) VALUES (%s, %s, %s, %s, %s)",
-            (name, marca, ruta_img if imagen else None, cantidad, tipo)
-        )
-        db.commit()
+        if tipo:
+            db, c = get_db()
+            try:
+                c.execute(
+                    f"INSERT INTO producto (nombre, marca, imagen, cantidad, tipo_producto) VALUES (%s, %s, %s, %s, %s)",
+                    (name, marca, ruta_img if imagen else None, cantidad, tipo)
+                )
+                db.commit()
 
-        return jsonify({'success': True})
-    else:
-        return jsonify({'success': False, 'message': 'Categoría no válida'}), 400
+                return jsonify({'success': True})
+            except Exception as e:
+                print(e)
+                return jsonify({'success': False, 'message': str(e)}), 400
+        else:
+            return jsonify({'success': False, 'message': 'Categoría no válida'}), 400
+    except Exception as e:
+        print(e)
+        return jsonify({'success': False, 'message': str(e)}), 400
