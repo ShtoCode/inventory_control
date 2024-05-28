@@ -1,0 +1,314 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+</style>
+<div class="flex flex-col items-center justify-center mt-8">
+<h2 class="lg:text-3xl md:text-3xl sm:text-2xl text-xl text-slate-700 mb-10">¡Confirma tu inventario!</h2>
+
+<ul class="max-w-md w-full divide-y divide-gray-200 dark:divide-gray-700" id="inventoryList">
+
+</ul>
+
+<div class="flex mt-8 md:flex-row md:items-center md:mt-8 sm:mt-18">
+    <button id="confirm-btn" type="button" class="flex items-center justify-center text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800" onclick="confirmInventory(event);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 mr-2.5">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+            <path d="M5 12l5 5l10 -10" />
+        </svg>
+        Confirmar inventario
+    </button>
+    <button id="cancel-btn" type="button" class="flex items-center justify-center text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900" onclick="cancelInventory(event);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 mr-2.5">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+            <path d="M18 6l-12 12" />
+            <path d="M6 6l12 12" />
+        </svg>
+        Cancelar inventario
+    </button>
+</div>
+
+
+</div>
+{% endblock %}
+{% block script %}
+
+<script>
+const displayInventory = (products) => {
+    const inventoryList = document.getElementById('inventoryList');
+    inventoryList.innerHTML = '';
+
+    if (Object.keys(products).length === 0) { 
+        const confirmBtn = document.getElementById('confirm-btn')
+        const cancelBtn = document.getElementById('cancel-btn')
+        inventoryList.innerHTML = '<p class="text-center bg-red-50 p-10">No hay productos en el inventario. ❌</p>';
+        confirmBtn.classList.add('invisible')
+        cancelBtn.classList.add('invisible')
+    
+        const btnVolver = document.createElement('a');
+        btnVolver.classList.add('block', 'mx-auto', 'mt-4', 'px-4', 'py-2', 'bg-gray-800', 'text-white', 'rounded-md', 'hover:bg-gray-700', 'focus:outline-none', 'focus:ring-2', 'focus:ring-gray-800', 'text-center');
+        btnVolver.href = "javascript:history.back()"; 
+
+        const svgContainer = document.createElement('span');
+        svgContainer.classList.add('inline-block', 'mr-2', 'align-middle');
+        svgContainer.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-back"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 11l-4 4l4 4m-4 -4h11a4 4 0 0 0 0 -8h-1" /></svg>';
+
+        btnVolver.appendChild(svgContainer);
+
+        const linkText = document.createTextNode('Volver al inventario');
+        btnVolver.appendChild(linkText);
+
+        inventoryList.appendChild(btnVolver);
+
+        return;
+}
+
+    for (const productName in products) { 
+        if (products.hasOwnProperty(productName)) {
+            const product = products[productName];
+            const cantidadProducto = getCantidadFromLocalStorage(productName);
+
+            const listItem = document.createElement('li');
+            listItem.classList.add('pb-3', 'sm:pb-4');
+
+            const fechaDevolucionInput = document.createElement('input');
+            fechaDevolucionInput.type = 'date';
+            fechaDevolucionInput.id = `fechaDevolucion-${product.id}`; 
+            fechaDevolucionInput.classList.add('rounded-md', 'px-3', 'py-2', 'border', 'border-gray-300', 'focus:border-green-500', 'focus:ring', 'focus:ring-green-500', 'focus:ring-opacity-50', 'appearance-none', 'block', 'w-full');
+            const today = new Date().toISOString().split('T')[0];
+            fechaDevolucionInput.min = today;
+
+            fechaDevolucionInput.addEventListener('change', () => saveFechaDevolucion(product.id, fechaDevolucionInput.value));
+
+            const cantidadInput = document.createElement('input');
+            cantidadInput.type = 'number';
+            cantidadInput.value = cantidadProducto || 0;
+            cantidadInput.addEventListener('change', () => updateCantidad(productName, cantidadInput.value));
+
+            listItem.innerHTML = `
+                <div class="flex items-center space-x-4 rtl:space-x-reverse">
+                    <div class="flex-shrink-0">
+                        <img class="w-8 h-8 rounded-full" src="static/img/${product.imagen}" alt="Imagen de producto">
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900 truncate">
+                            ${productName}
+                        </p>
+                        <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                            ${product.marca || 'Marca desconocida'} <!-- Manejar el caso en que la marca sea undefined -->
+                        </p>
+                    </div>
+                    <div class="inline-flex items-center text-base font-semibold text-gray-900">
+                        <button onclick="decreaseCantidad('${productName}')" class="px-3 py-1 rounded-full bg-gray-300 text-center">-</button>
+                        <input class="px-3 py-2 border border-gray-300 rounded appearance-none text-center w-14 bg-gray-200" type="number" value="${cantidadProducto || 0}" id="cantidad-${productName}" min="1" max="${product.cantidadDisponible}">
+                        <button onclick="increaseCantidad('${productName}', '${product.cantidadDisponible}')" class="px-3 py-1 rounded-full bg-gray-300 text-center">+</button>
+                        <button onclick="deleteProduct('${productName}')" class="px-3 py-1 rounded-full bg-gray-300 text-center">❌</button>
+                    </div>
+                </div>
+            `;
+            listItem.appendChild(fechaDevolucionInput);
+
+            inventoryList.appendChild(listItem);
+        }
+    }
+};
+
+function decreaseCantidad(productName) {
+    const cantidadInput = document.getElementById(`cantidad-${productName}`);
+    let cantidad = parseInt(cantidadInput.value);
+    if (cantidad > 1) {
+        cantidad--;
+        cantidadInput.value = cantidad;
+        updateCantidad(productName, cantidad);
+    }
+}
+
+function increaseCantidad(productName, cantidadLimite) {
+    const cantidadInput = document.getElementById(`cantidad-${productName}`);
+    let cantidad = parseInt(cantidadInput.value);
+    if (cantidad < cantidadLimite) {
+        cantidad++;
+        cantidadInput.value = cantidad;
+        updateCantidad(productName, cantidad);
+    } 
+}
+
+function updateCantidad(productName, newCantidad) {
+    let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+
+    const productIndex = inventory.findIndex(product => product.producto === productName);
+
+    if (productIndex !== -1) {
+        inventory[productIndex].cantidad = newCantidad;
+        localStorage.setItem('inventory', JSON.stringify(inventory));
+    }
+}
+
+function handleCantidadChange(productName) {
+    const cantidadInput = document.getElementById(`cantidad-${productName}`);
+    const newQuantity = parseInt(cantidadInput.value);
+    updateCantidad(productName, newQuantity);
+}
+
+document.querySelectorAll('input[type="number"]').forEach(input => {
+    const productName = input.id.split('-')[1]; 
+    input.addEventListener('change', () => handleCantidadChange(productName));
+});
+
+function deleteProduct(productName) {
+    let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+
+    const updatedInventory = inventory.filter(product => product.producto !== productName);
+    console.log('Producto eliminado:', productName);
+
+    localStorage.setItem('inventory', JSON.stringify(updatedInventory));
+
+    const inventoryList = document.getElementById('inventoryList');
+    inventoryList.innerHTML = '';
+    getInventoryItems()
+}
+
+const getCantidadFromLocalStorage = (productName) => {
+    const products = JSON.parse(localStorage.getItem('inventory')) || [];
+
+    const product = products.find(p => p.producto === productName);
+
+    if (product && product.hasOwnProperty('cantidad')) {
+        return product.cantidad;
+    } else {
+        return 0;
+    }
+};
+
+const saveFechaDevolucion = (productId, fechaDevolucion) => {
+    const inventoryData = JSON.parse(localStorage.getItem('inventory'));
+    console.log('Inventory Data:', inventoryData);
+    let productFound = false;
+    if (Array.isArray(inventoryData)) {
+        for (const product of inventoryData) {
+            if (product.id === productId) {
+                productFound = true;
+                if (!product.hasOwnProperty('fechaDevolucion')) {
+                    product.fechaDevolucion = fechaDevolucion;
+                } else {
+                    product.fechaDevolucion = fechaDevolucion;
+                }
+                break;
+            }
+        }
+    }
+    if (productFound) {
+        localStorage.setItem('inventory', JSON.stringify(inventoryData));
+    } else {
+    }
+    console.log(localStorage.getItem('inventory'));
+};
+const getInventoryItems = async () => {
+    const inventoryData = JSON.parse(localStorage.getItem('inventory'));
+    if (!inventoryData || inventoryData.length === 0) {
+        displayInventory({})
+        return;
+    }
+
+    try {
+        const productNames = inventoryData.map(item => item.producto);
+
+        const response = await fetch('/get-inventory-products', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(productNames)
+
+        });
+        if (!response.ok){
+            throw new Error(response.statusText);
+        }
+        const products = await response.json();
+        displayInventory(products);
+    } catch (error) {
+        console.error('Error al obtener los productos del inventario:', error);
+    }
+};
+
+getInventoryItems();
+
+const cancelInventory = (e) => {
+   e.preventDefault();
+
+   Swal.fire({
+      title: '¿Quieres cancelar tu inventario?',
+      showCancelButton: true,
+      icon: 'question',
+      confirmButtonText: 'Sí',
+      confirmButtonColor: "#4b7579",
+      cancelButtonText: "No",
+      cancelButtonColor: "#ff333f"
+   }).then((result) => {
+      if (result.isConfirmed) {
+         localStorage.removeItem('inventory')
+         window.location.href = "/"
+      }
+   })
+} 
+
+const confirmInventory = async (e) => {
+    e.preventDefault();
+    const inventoryData = JSON.parse(localStorage.getItem('inventory'));
+
+    const hasProductWithoutReturnDate = Object.values(inventoryData).some(product => !product.fechaDevolucion);
+
+    if (hasProductWithoutReturnDate) {
+        Swal.fire({
+            title: 'Error',
+            text: 'Por favor, ingresa la fecha de devolución para todos los productos antes de confirmar el inventario.',
+            icon: 'error',
+            confirmButtonText: 'Ok',
+            confirmButtonColor: "#4b7579",
+        });
+        return; 
+    }
+
+    try {
+        const response = await fetch('/confirm-inventory', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(inventoryData)
+        });
+
+        if (!response.ok) {
+            throw new Error(response.statusText);
+        }
+
+        Swal.fire({
+            title: 'Inventario guardado',
+            icon: 'success',
+            showConfirmButton: false,
+            timer: 1500
+        }).then(() => {
+                localStorage.removeItem('inventory')
+                window.location.href = "/"
+
+        })
+
+    } catch (error) {
+        Swal.fire({
+            title: 'Error guardando el inventario :(',
+            text: error.message,
+            icon: 'error',
+            confirmButtonText: 'Ok',
+            confirmButtonColor: "#4b7579",
+        });
+    }
+};
+
+
+</script>
+{% endblock %}

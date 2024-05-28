@@ -2,77 +2,243 @@
 
 {% block content %}
 <div class="flex flex-col items-center justify-center mt-8">
-<h2 class="lg:text-3xl md:text-3xl sm:text-2xl text-xl text-slate-700">Materiales, herramientas y EPP</h2>
+<h2 class="lg:text-3xl md:text-3xl sm:text-2xl text-xl text-slate-700 mb-10">Materiales, herramientas y EPP</h2>
+<div class="max-w-lg mx-auto mb-6">
+    <div class="flex">
+        <label for="search-dropdown" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Your Email</label>
+        <button id="dropdown-button" data-dropdown-toggle="dropdown" class="flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-s-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 dark:text-white dark:border-gray-600" type="button">{{filter}}<svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+  </svg></button>
+        <div id="dropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
+            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdown-button">
+            <li>
+                <input id="filter-radio-example-3" type="radio" value="all" name="filter-radio"
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                <label for="filter-radio-example-3" class="w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">
+                    Todos los productos
+                </label>
+            </li>
+            <li>
+                <input id="filter-radio-example-1" type="radio" value="1" name="filter-radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                <label for="filter-radio-example-1" class="w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">
+                    Materiales
+                </label>
+            </li>
+            <li>
+                <input id="filter-radio-example-2" type="radio" value="2" name="filter-radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                <label for="filter-radio-example-2" class="w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">
+                    Herramientas
+                </label>
+            </li>
+            <li>
+
+                <input id="filter-radio-example-3" type="radio" value="3" name="filter-radio"
+                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                <label for="filter-radio-example-3"
+                class="w-full ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">Equipo
+                de protección</label>
+            </li>
+            </ul>
+        </div>
+        <div class="relative w-full">
+            <input type="text" id="search-products" class="block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-e-lg border-s-gray-50 border-s-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-s-gray-700  dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500" placeholder="Busca algún producto..." required />
+            <button type="button" onclick="searchSubmit(event);" class="absolute top-0 end-0 p-2.5 text-sm font-medium h-full text-white bg-blue-700 rounded-e-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                </svg>
+                <span class="sr-only">Search</span>
+            </button>
+        </div>
+    </div>
+</div>
+<div class="flex justify-center mt-2 mb-2">
+  <div class="bg-cyan-500 rounded-full px-3 py-2 text-white sm:w-2/3 md:w-1/2 lg:w-full">
+    <a href="{{ url_for('home.request_product') }}" class="flex sm:text-center">
+        ¿No encuentras el producto que buscas?
+    <svg class="ml-1"  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye-question"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M14.071 17.764a8.989 8.989 0 0 1 -2.071 .236c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.346 0 6.173 1.727 8.482 5.182" /><path d="M19 22v.01" /><path d="M19 19a2.003 2.003 0 0 0 .914 -3.782a1.98 1.98 0 0 0 -2.414 .483" /></svg>
+    </a>
+  </div>
+</div>
+
 <div class="flex flex-wrap justify-center w-full gap-8 mt-5">
-
-
+{% if productos %}
 {% for producto in productos %}
-<div class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+<div class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 mb-16">
+
     <div class="flex flex-col items-center pb-10 mt-5">
-        <img class="w-24 h-24 mb-3 shadow-lg" src="{{ producto[3] }}" alt="{{ producto[1] }}"/>
+        <img class="w-24 h-24 mb-3 shadow-lg" src="{{ url_for('static', filename='img/' + producto[3]) }}" alt="{{ producto[1] }}">
         <h5 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">{{ producto[1] }}</h5>
         <span class="text-sm text-gray-500 dark:text-gray-400">{{ producto[2] }}</span>
-        <span class="text-sm text-gray-500 dark:text-gray-400">Stock: {{ producto[4] }}</span>
-        <label for="quantity-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Seleccione la cantidad:</label>
+        <span class="text-sm text-gray-500 dark:text-gray-400">Inventario: {{ producto[4] }}</span>
+        <label for="quantity-input-{{ loop.index }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Seleccione la cantidad:</label>
         <div class="relative flex items-center max-w-[11rem]">
-            <button type="button" id="decrement-button" data-input-counter-decrement="quantity-input" class="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+            <button type="button" id="decrement-button-{{ loop.index }}" data-input-counter-decrement="quantity-input-{{ loop.index }}" class="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                 <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16"/>
                 </svg>
             </button>
-            <input type="text" id="quantity-input" data-input-counter data-input-counter-min="1" data-input-counter-max="5" aria-describedby="helper-text-explanation" class="bg-gray-50 border-x-0 border-gray-300 h-11 font-medium text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full pb-6 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="1" value="1" required>
+            <input type="text" id="quantity-input-{{ loop.index }}" data-input-counter data-input-counter-min="1" data-input-counter-max="{{ producto[4] }}" aria-describedby="helper-text-explanation" class="bg-gray-50 border-x-0 border-gray-300 h-11 font-medium text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full pb-6 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="1" value="1" required>
             <div class="absolute bottom-1 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 flex items-center text-xs text-gray-400 space-x-1 rtl:space-x-reverse">
                 <svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                  <path stroke="none" d="M0 0h24v24H0z"/>
-                  <path d="M19.875 6.27c.7 .398 1.13 1.143 1.125 1.948v7.284c0 .809 -.443 1.555 -1.158 1.948l-6.75 4.27a2.269 2.269 0 0 1 -2.184 0l-6.75 -4.27a2.225 2.225 0 0 1 -1.158 -1.948v-7.285c0 -.809 .443 -1.554 1.158 -1.947l6.75 -3.98a2.33 2.33 0 0 1 2.25 0l6.75 3.98h-.033z" />
-                  <path d="M12 9h.01" />
-                  <path d="M11 12h1v4h1" />
+                    <path stroke="none" d="M0 0h24v24H0z"/>
+                    <path d="M19.875 6.27c.7 .398 1.13 1.143 1.125 1.948v7.284c0 .809 -.443 1.555 -1.158 1.948l-6.75 4.27a2.269 2.269 0 0 1 -2.184 0l-6.75 -4.27a2.225 2.225 0 0 1 -1.158 -1.948v-7.285c0 -.809 .443 -1.554 1.158 -1.947l6.75 -3.98a2.33 2.33 0 0 1 2.25 0l6.75 3.98h-.033z" />
+                    <path d="M12 9h.01" />
+                    <path d="M11 12h1v4h1" />
                 </svg>
                 <span>Cantidad</span>
             </div>
-            <button type="button" id="increment-button" data-input-counter-increment="quantity-input" class="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+            <button type="button" id="increment-button-{{ loop.index }}" data-input-counter-increment="quantity-input-{{ loop.index }}" class="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                 <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16"/>
                 </svg>
             </button>
         </div>
         <div class="flex mt-4 md:mt-6">
-            <button id="add-inventory" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-green-800 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300" type="submit">Agregar al inventario 
+            <button id="add-inventory-{{ loop.index }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-green-800 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 add-inventory-btn" 
+                    data-product-name="{{ producto[1] }}" 
+                    data-quantity-input-id="quantity-input-{{ loop.index }}" 
+                    data-product-id="{{ producto[0] }}"
+                    type="button">
+                Agregar al inventario 
                 <svg xmlns="http://www.w3.org/2000/svg" class="ml-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                  <path d="M9 12h6" />
-                  <path d="M12 9v6" />
-                  <path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14z" />
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M9 12h6" />
+                    <path d="M12 9v6" />
+                    <path d="M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14z" />
                 </svg>
             </button>
         </div>
     </div>
 </div>
+
+
 {% endfor %}
+{% else %}
+
+<div class="flex justify-center items-center h-96 bg-yellow-600 opacity-50 p-8 rounded-md w-2/4 text-center">
+    <h3 class="text-3xl text-white">¡Aún no hay productos registrados!</h3>
 </div>
+{% endif %}
+</div>
+
+
+<a id="check-inventory-btn" href="{{ url_for('home.check_inventory') }}" class="flex text-white mt-8 bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-md px-5 py-3.5 text-center me-2 mb-2 fixed bottom-8 right-18 z-10 sm:static hidden">
+    <svg class="mr-1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-checkup-list">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+        <path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2" />
+        <path d="M9 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z" />
+        <path d="M9 14h.01" />
+        <path d="M9 17h.01" />
+        <path d="M12 16l1 1l3 -3" />
+    </svg>
+    Comprobar inventario
+</a>
 
 
 {% endblock %}
 {% block script %}
 <script>
-    const cantidad = document.getElementById('quantity-input')
-    const producto = document.getElementById('producto')
-    const inventory = {}
+  const addInventoryButtons = document.querySelectorAll('.add-inventory-btn');
 
-   
-    const addInventory = () =>{
-        const data = {
-            'producto': producto.innerHTML,
-            'quantity': cantidad.value
+    addInventoryButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const productId = button.getAttribute('data-product-id');
+            const productName = button.getAttribute('data-product-name');
+            const quantityInputId = button.getAttribute('data-quantity-input-id');
+            const quantityInput = document.getElementById(quantityInputId);
+
+            if (quantityInput) {
+                const quantity = quantityInput.value;
+
+                const data = {
+                    'id': parseInt(productId), 
+                    'producto': productName,
+                    'cantidad': parseInt(quantity)
+                };
+
+                addToInventory(data);
+                Swal.fire({
+                    title: "¡Producto agregado al inventario!",
+                    icon: "success",
+                    position: "center",
+                    showConfirmButton: false,
+                    timer: 1000,
+                    confirmButtonColor: "#4b7579"
+                }).then(() => {
+                    updateCheckInventoryButtonVisibility();
+                });
+            } else {
+                console.error('No se encontró el input de cantidad para el producto:', productName);
+            }
+        });
+    });
+
+    function addToInventory(data) {
+        const inventoryData = JSON.parse(localStorage.getItem('inventory')) || [];
+
+        inventoryData.push(data);
+
+        localStorage.setItem('inventory', JSON.stringify(inventoryData));
+
+        console.log('Producto agregado al inventario:', data.producto);
+        console.log('Cantidad:', data.cantidad);
+        console.log('Inventario actualizado:', inventoryData);
+    }
+
+    function updateCheckInventoryButtonVisibility() {
+        const checkInventoryBtn = document.getElementById('check-inventory-btn');
+        const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+
+        if (inventory.length > 0) {
+            checkInventoryBtn.classList.remove('hidden');
+        } else {
+            checkInventoryBtn.classList.add('hidden');
         }
-        inventory[data.producto] = data.quantity
-        saveInventory()
     }
 
-    const saveInventory = () => {
-        localStorage.setItem('inventory', JSON.stringify(inventory))
-    }
-    
+    window.addEventListener('storage', function(event) {
+        if (event.key === 'inventory') {
+            updateCheckInventoryButtonVisibility();
+        }
+    });
+
+
+
+const radioButtons = document.querySelectorAll('input[name="filter-radio"]')
+radioButtons.forEach((radioButton) => {
+  radioButton.addEventListener('click', async () => {
+    history.pushState({}, document.title, window.location.pathname)
+    const selectedFilter = radioButton.value
+    const currentUrl = new URL(window.location.href)
+    currentUrl.searchParams.set('filter', selectedFilter)
+    window.location.href = currentUrl.toString()
+  })
+})
+
+const search = document.getElementById("search-products")
+search.addEventListener('keypress', () => {
+  if (event.key == 'Enter') {
+    history.pushState({}, document.title, window.location.pathname)
+    const valueSearch = search.value
+    const currentUrl = new URL(window.location.href)
+    currentUrl.searchParams.set('search', valueSearch)
+    window.location.href = currentUrl.toString()
+  }
+})
+
+
+
+const searchSubmit = (e) => {
+    e.preventDefault()
+    history.pushState({}, document.title, window.location.pathname)
+    const valueSearch = search.value
+    const currentUrl = new URL(window.location.href)
+    currentUrl.searchParams.set('search', valueSearch)
+    window.location.href = currentUrl.toString()
+}
+
+    updateCheckInventoryButtonVisibility();
+
 
 </script>
 {% endblock %}

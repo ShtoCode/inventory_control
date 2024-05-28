@@ -26,7 +26,9 @@ instructions = [
        marca VARCHAR(80) NOT NULL,
        imagen VARCHAR(200) NOT NULL,
        cantidad INTEGER NOT NULL check(cantidad > 0),
+       cantidad_disponible INTEGER NOT NULL,
        tipo_producto INTEGER NOT NULL REFERENCES tipo_producto(id_tipo_producto),
+       disponible BOOLEAN DEFAULT TRUE,
        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     """,
@@ -55,11 +57,35 @@ instructions = [
        id_asignacion SERIAL PRIMARY KEY,
        id_usuario INTEGER NOT NULL REFERENCES usuario(id_usuario),
        id_producto INTEGER NOT NULL REFERENCES producto(id_producto),
+       cantidad INTEGER NOT NULL,
        fecha_devolucion TIMESTAMP,
        fecha_asignacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
        CONSTRAINT validacion_fechas CHECK (fecha_devolucion >= fecha_asignacion OR fecha_devolucion IS NULL)
     );
+    """,
     """
+      CREATE OR REPLACE FUNCTION actualizar_disponibilidad()
+      RETURNS TRIGGER AS
+      $$
+      BEGIN
+         -- Verificar si la cantidad disponible es 0 y actualizar el estado de disponible
+         IF NEW.cantidad_disponible = 0 THEN
+            UPDATE producto
+            SET disponible = FALSE
+            WHERE id_producto = NEW.id_producto;
+         END IF;
+         RETURN NEW;
+      END;
+      $$
+      LANGUAGE plpgsql;
+    """,
+    """
+    CREATE TRIGGER trigger_actualizar_disponibilidad
+    AFTER UPDATE OF cantidad_disponible ON producto
+    FOR EACH ROW
+    EXECUTE FUNCTION actualizar_disponibilidad();
+    """
+
 
 
 ]

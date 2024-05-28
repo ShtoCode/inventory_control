@@ -99,6 +99,7 @@ def load_logged_in_user():
         g.user = c.fetchone()
         if g.user:
             session['user_role'] = g.user[4]
+            g.user_id = user_id
 
 
 def login_required(view):
@@ -114,8 +115,7 @@ def admin_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if session.get('user_role') != 1:
-            flash('No tienes permiso para acceder a esta página', 'error')
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('home.index'))
         return view(**kwargs)
     return wrapped_view
 
